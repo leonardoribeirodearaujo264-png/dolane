@@ -1,0 +1,158 @@
+@import "tailwindcss";
+
+/*
+  Brand tokens.
+  Forest 900 (#01271A) and Gold 500 (#E1C277) are sampled directly from the
+  official Dolane Cleaning logo artwork; the rest of each ramp is derived from
+  those two anchors.
+*/
+@theme {
+  --color-forest-50: #f1f8f5;
+  --color-forest-100: #dcece5;
+  --color-forest-200: #b9d9cc;
+  --color-forest-300: #86bda8;
+  --color-forest-400: #4f9a80;
+  --color-forest-500: #1f7a5c;
+  --color-forest-600: #136049;
+  --color-forest-700: #0b4b39;
+  --color-forest-800: #06382a;
+  --color-forest-900: #01271a;
+  --color-forest-950: #010f0a;
+
+  --color-gold-100: #faf3e2;
+  --color-gold-200: #f4e4bd;
+  --color-gold-300: #ecd396;
+  --color-gold-400: #e6ca85;
+  --color-gold-500: #e1c277;
+  --color-gold-600: #c1a057;
+  --color-gold-700: #997c3d;
+  --color-gold-800: #6f592b;
+
+  --color-cream: #fbf9f5;
+  --color-sand: #f3efe7;
+  --color-ink: #14201b;
+
+  --font-display: var(--font-cormorant), ui-serif, Georgia, serif;
+  --font-sans: var(--font-urbanist), ui-sans-serif, system-ui, sans-serif;
+
+  --shadow-soft: 0 1px 2px rgb(1 39 26 / 0.04), 0 8px 24px -8px rgb(1 39 26 / 0.10);
+  --shadow-lift: 0 2px 4px rgb(1 39 26 / 0.05), 0 18px 40px -12px rgb(1 39 26 / 0.18);
+
+  --animate-marquee: marquee 40s linear infinite;
+
+  @keyframes marquee {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
+  }
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    /* Offset anchor targets so the sticky header never covers a heading. */
+    scroll-padding-top: 5.5rem;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    background-color: var(--color-cream);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    /* Nothing on this site may scroll sideways. */
+    overflow-x: clip;
+  }
+
+  h1, h2, h3, h4 {
+    font-family: var(--font-display);
+    font-weight: 300;
+    letter-spacing: -0.01em;
+    text-wrap: balance;
+  }
+
+  p { text-wrap: pretty; }
+
+  :focus-visible {
+    outline: 2px solid var(--color-gold-600);
+    outline-offset: 3px;
+    border-radius: 2px;
+  }
+
+  ::selection {
+    background-color: var(--color-gold-300);
+    color: var(--color-forest-900);
+  }
+}
+
+@layer components {
+  /* The thin gold rule that echoes the logo's underline. */
+  .rule-gold {
+    display: inline-block;
+    height: 1px;
+    width: 3rem;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      var(--color-gold-600) 30%,
+      var(--color-gold-600) 70%,
+      transparent
+    );
+  }
+
+  .eyebrow {
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+  }
+}
+
+/*
+  Scroll-reveal. Elements start shifted, then `data-revealed` is set by an
+  IntersectionObserver. Anyone who prefers reduced motion just sees the
+  final state immediately.
+*/
+@layer utilities {
+  .reveal {
+    opacity: 0;
+    transform: translateY(18px);
+    transition:
+      opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1),
+      transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+    transition-delay: var(--reveal-delay, 0ms);
+  }
+
+  .reveal[data-revealed="true"] {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/*
+  Without JavaScript the observer never runs, so the reveal state must never be
+  what hides content. Anyone with scripting off sees the finished layout.
+*/
+@media (scripting: none) {
+  .reveal {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+
+  .reveal {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}
