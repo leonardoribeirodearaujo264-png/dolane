@@ -3,7 +3,7 @@
  * owners on an actual job — no stock photography anywhere on this site.
  *
  * Widths/heights are the intrinsic sizes of the optimized files (see
- * public/images-manifest.json) so the masonry grid never shifts as images load.
+ * public/images/images-manifest.json) so the grid never shifts as images load.
  *
  * To add more: drop originals into /assets-source/photos, register them in
  * scripts/prepare-images.mjs, run `npm run images`, then append here.

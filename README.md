@@ -131,7 +131,7 @@ npm run images
 
 It resizes, converts to WebP, honors EXIF rotation and then **strips all
 metadata** (including any GPS coordinates from phone photos), and writes
-`public/images-manifest.json` with the real output dimensions.
+`public/images/images-manifest.json` with the real output dimensions.
 
 To add photos: drop the originals in `assets-source/photos/`, add an entry to
 the `PHOTOS` array in the script, run `npm run images`, then reference the new
