@@ -7,11 +7,10 @@
  *   - PageView is fired by the base pixel (see components/analytics/MetaPixel).
  *   - Lead    → ONLY after a form is submitted successfully (a real request was
  *               captured). Never on focus, open or click.
- *   - Contact → a lighter "reached out" intent: tapping a Text (SMS) or Call CTA.
+ *   - Contact → a lighter "reached out" intent: tapping a Text (SMS) or Call
+ *               link. Fired once per click by a single delegated listener in
+ *               MetaPixel, so there are no duplicate events.
  */
-
-type LeadKind = 'quote' | 'contact-form';
-type ContactMethod = 'sms' | 'call';
 
 function fire(event: string, params?: Record<string, unknown>) {
   if (typeof window === 'undefined') return;
@@ -23,11 +22,11 @@ function fire(event: string, params?: Record<string, unknown>) {
 }
 
 /** Fire once, right after a successful form submission. */
-export function trackLead(kind: LeadKind) {
-  fire('Lead', { content_name: kind });
+export function trackLead(params?: { content_name?: string; content_category?: string }) {
+  fire('Lead', { content_category: 'Quote Request', ...params });
 }
 
-/** Fire on a tap of a Text (SMS) or Call call-to-action. */
-export function trackContact(method: ContactMethod) {
-  fire('Contact', { method });
+/** Fire on a tap of a Text (SMS) or Call link. `contentName` is "Text Us" | "Call". */
+export function trackContact(contentName: string) {
+  fire('Contact', { content_name: contentName });
 }

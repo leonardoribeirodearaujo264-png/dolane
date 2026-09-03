@@ -5,7 +5,6 @@ import type { ReactNode } from 'react';
 
 import { cn } from '@/lib/cn';
 import { smsHrefWithBody } from '@/lib/site';
-import { trackContact } from '@/lib/analytics';
 
 type Variant = 'gold' | 'forest' | 'ghost-light' | 'link';
 type Size = 'md' | 'lg';
@@ -48,7 +47,6 @@ export default function SmsButton({
   return (
     <a
       href={smsHrefWithBody}
-      onClick={() => trackContact('sms')}
       className={cn(base, variants[variant], variant !== 'link' && sizes[size], className)}
     >
       {withIcon && <MessageSquareText className="size-4 shrink-0" aria-hidden="true" />}

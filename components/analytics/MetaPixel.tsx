@@ -4,6 +4,8 @@ import { useEffect, useRef } from 'react';
 import { usePathname } from 'next/navigation';
 import Script from 'next/script';
 
+import { trackContact } from '@/lib/analytics';
+
 /**
  * Meta (Facebook) Pixel.
  *
@@ -34,6 +36,23 @@ export default function MetaPixel() {
     }
     window.fbq?.('track', 'PageView');
   }, [pathname]);
+
+  // One delegated listener fires a Contact event for ANY Text (sms:) or Call
+  // (tel:) link on the site — footer, header, chat, CTAs — exactly once per
+  // click, so there are never duplicate Contact events.
+  useEffect(() => {
+    if (!PIXEL_ID) return;
+    const onClick = (event: MouseEvent) => {
+      const target = event.target as HTMLElement | null;
+      const link = target?.closest?.('a[href^="sms:"], a[href^="tel:"]');
+      if (!link) return;
+      const href = link.getAttribute('href') ?? '';
+      trackContact(href.startsWith('sms:') ? 'Text Us' : 'Call');
+    };
+    // Capture phase so it runs before the browser hands off to the SMS/dialer app.
+    document.addEventListener('click', onClick, true);
+    return () => document.removeEventListener('click', onClick, true);
+  }, []);
 
   if (!PIXEL_ID) return null;
 

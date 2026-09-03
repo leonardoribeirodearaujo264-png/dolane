@@ -16,7 +16,7 @@ import {
 
 import { cn } from '@/lib/cn';
 import { CHAT_OPEN_EVENT } from '@/lib/chat';
-import { trackContact, trackLead } from '@/lib/analytics';
+import { trackLead } from '@/lib/analytics';
 import { site, smsHref, telHref, whatsappHref } from '@/lib/site';
 
 function WhatsAppGlyph({ className }: { className?: string }) {
@@ -128,7 +128,7 @@ export default function ChatWidget() {
       }
       setStatus('sent');
       // Meta conversion: a real lead was captured. Fires once, only here.
-      trackLead('contact-form');
+      trackLead({ content_name: 'Chat Message', content_category: 'Contact' });
       form.reset();
     } catch {
       setServerMessage('We could not send that just now. Please call or text us instead.');
@@ -203,7 +203,6 @@ export default function ChatWidget() {
 
               <a
                 href={smsHref}
-                onClick={() => trackContact('sms')}
                 className="mt-2 flex w-full items-center gap-3.5 rounded-xl border border-forest-900/10 bg-white px-4 py-3.5 text-left transition hover:border-gold-600/40 hover:bg-gold-100/40"
               >
                 <span className="flex size-10 shrink-0 items-center justify-center rounded-full bg-forest-900 text-gold-300">
@@ -217,7 +216,6 @@ export default function ChatWidget() {
 
               <a
                 href={telHref}
-                onClick={() => trackContact('call')}
                 className="mt-2 flex w-full items-center gap-3.5 rounded-xl border border-forest-900/10 bg-white px-4 py-3.5 text-left transition hover:border-gold-600/40 hover:bg-gold-100/40"
               >
                 <span className="flex size-10 shrink-0 items-center justify-center rounded-full bg-forest-900 text-gold-300">
