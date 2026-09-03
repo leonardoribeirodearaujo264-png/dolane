@@ -2,6 +2,7 @@ import Image from 'next/image';
 import { Check, Phone } from 'lucide-react';
 
 import { ButtonLink } from '@/components/ui/Button';
+import SmsButton from '@/components/ui/SmsButton';
 import { LogoMark } from '@/components/ui/Logo';
 import { site, telHref } from '@/lib/site';
 
@@ -51,16 +52,11 @@ export default function Hero() {
 
           <div className="mt-9 flex flex-col gap-3 sm:flex-row sm:items-center">
             <ButtonLink href="#quote" size="lg" className="w-full sm:w-auto">
-              Request a Free Quote
+              Get a Free Quote
             </ButtonLink>
-            <ButtonLink
-              href="#services"
-              variant="ghost-light"
-              size="lg"
-              className="w-full sm:w-auto"
-            >
-              View Our Services
-            </ButtonLink>
+            <SmsButton variant="ghost-light" size="lg" className="w-full sm:w-auto">
+              Text Us for a Free Quote
+            </SmsButton>
           </div>
 
           <a

@@ -1,12 +1,13 @@
 'use client';
 
 import { useEffect, useId, useRef, useState } from 'react';
-import { AlertCircle, Check, Loader2, MessageCircle, Phone } from 'lucide-react';
+import { AlertCircle, Check, ChevronDown, Loader2, MessageCircle, Phone } from 'lucide-react';
 
 import { Button } from '@/components/ui/Button';
 import { cn } from '@/lib/cn';
 import { site, telHref } from '@/lib/site';
 import { openChat } from '@/lib/chat';
+import { trackLead } from '@/lib/analytics';
 import {
   additionalServices,
   frequencyOptions,
@@ -143,6 +144,8 @@ export default function QuoteForm() {
       }
 
       setStatus('sent');
+      // Meta conversion: a real lead was captured. Fires once, only here.
+      trackLead('quote');
     } catch {
       setServerMessage(
         'We could not send your request just now. Please call or text us instead.',
@@ -198,6 +201,7 @@ export default function QuoteForm() {
       className="rounded-2xl border border-forest-900/10 bg-white p-6 shadow-lift sm:p-9"
     >
       <div className="grid gap-5 sm:grid-cols-2">
+        {/* The essentials — all an ad visitor needs to request a quote. */}
         <Field label="Full name" htmlFor={id('fullName')} error={errors.fullName} required>
           <input
             id={id('fullName')}
@@ -241,18 +245,6 @@ export default function QuoteForm() {
           />
         </Field>
 
-        <Field label="City" htmlFor={id('city')} error={errors.city} required>
-          <input
-            id={id('city')}
-            name="city"
-            type="text"
-            autoComplete="address-level2"
-            placeholder="Westerville"
-            aria-invalid={Boolean(errors.city)}
-            className={cn(fieldBase, errors.city ? 'border-red-400' : 'border-forest-900/15')}
-          />
-        </Field>
-
         <Field label="ZIP code" htmlFor={id('zip')} error={errors.zip} required>
           <input
             id={id('zip')}
@@ -287,58 +279,11 @@ export default function QuoteForm() {
           </select>
         </Field>
 
-        <Field label="Frequency" htmlFor={id('frequency')} error={errors.frequency} required>
-          <select
-            id={id('frequency')}
-            name="frequency"
-            defaultValue={frequencyOptions[3]}
-            className={cn(fieldBase, 'border-forest-900/15')}
-          >
-            {frequencyOptions.map((option) => (
-              <option key={option} value={option}>
-                {option}
-              </option>
-            ))}
-          </select>
-        </Field>
-
-        <div className="grid grid-cols-3 gap-4 sm:col-span-2">
-          <Field label="Bedrooms" htmlFor={id('bedrooms')}>
-            <input
-              id={id('bedrooms')}
-              name="bedrooms"
-              type="number"
-              min={0}
-              max={20}
-              placeholder="3"
-              className={cn(fieldBase, 'border-forest-900/15')}
-            />
-          </Field>
-          <Field label="Bathrooms" htmlFor={id('bathrooms')}>
-            <input
-              id={id('bathrooms')}
-              name="bathrooms"
-              type="number"
-              min={0}
-              max={20}
-              step="0.5"
-              placeholder="2"
-              className={cn(fieldBase, 'border-forest-900/15')}
-            />
-          </Field>
-          <Field label="Approx. sq ft" htmlFor={id('squareFeet')}>
-            <input
-              id={id('squareFeet')}
-              name="squareFeet"
-              type="text"
-              inputMode="numeric"
-              placeholder="1,800"
-              className={cn(fieldBase, 'border-forest-900/15')}
-            />
-          </Field>
-        </div>
-
-        <Field label="Preferred date" htmlFor={id('preferredDate')}>
+        <Field
+          label="Preferred date or timeframe"
+          htmlFor={id('preferredDate')}
+          className="sm:col-span-2"
+        >
           <input
             id={id('preferredDate')}
             name="preferredDate"
@@ -347,90 +292,173 @@ export default function QuoteForm() {
           />
         </Field>
 
-        <Field label="Do you have pets?" htmlFor={id('pets')}>
-          <select
-            id={id('pets')}
-            name="pets"
-            defaultValue=""
-            className={cn(fieldBase, 'border-forest-900/15')}
-          >
-            <option value="">Select…</option>
-            {petOptions.map((option) => (
-              <option key={option} value={option}>
-                {option}
-              </option>
-            ))}
-          </select>
-        </Field>
-
-        <Field
-          label="When was your home last professionally cleaned?"
-          htmlFor={id('lastCleaned')}
-          className="sm:col-span-2"
-        >
-          <select
-            id={id('lastCleaned')}
-            name="lastCleaned"
-            defaultValue=""
-            className={cn(fieldBase, 'border-forest-900/15')}
-          >
-            <option value="">Select…</option>
-            {lastCleanedOptions.map((option) => (
-              <option key={option} value={option}>
-                {option}
-              </option>
-            ))}
-          </select>
-        </Field>
-
-        <fieldset className="sm:col-span-2">
-          <legend className="mb-2.5 text-sm font-medium text-forest-900/85">
-            Additional services{' '}
-            <span className="font-normal text-forest-900/50">
-              (optional, may carry an extra fee)
+        {/* Everything else is optional and tucked away, so the form stays short
+            for ad traffic. These inputs stay in the DOM, so they still submit. */}
+        <details className="group sm:col-span-2 rounded-xl border border-forest-900/10 bg-sand/50">
+          <summary className="flex cursor-pointer list-none items-center justify-between gap-3 px-4 py-3.5 text-sm font-medium text-forest-900 [&::-webkit-details-marker]:hidden">
+            <span>
+              Add a few details for a faster, more accurate quote{' '}
+              <span className="font-normal text-forest-900/55">(optional)</span>
             </span>
-          </legend>
-          <div className="grid grid-cols-1 gap-x-6 gap-y-2.5 sm:grid-cols-2">
-            {additionalServices.map((option) => (
-              <label
-                key={option}
-                className="flex cursor-pointer items-center gap-2.5 text-sm text-forest-900/80"
+            <ChevronDown
+              className="size-4 shrink-0 text-forest-900/50 transition-transform group-open:rotate-180"
+              aria-hidden="true"
+            />
+          </summary>
+
+          <div className="grid gap-5 border-t border-forest-900/10 p-4 sm:grid-cols-2 sm:p-5">
+            <Field label="City" htmlFor={id('city')}>
+              <input
+                id={id('city')}
+                name="city"
+                type="text"
+                autoComplete="address-level2"
+                placeholder="Westerville"
+                className={cn(fieldBase, 'border-forest-900/15')}
+              />
+            </Field>
+
+            <Field label="Frequency" htmlFor={id('frequency')}>
+              <select
+                id={id('frequency')}
+                name="frequency"
+                defaultValue=""
+                className={cn(fieldBase, 'border-forest-900/15')}
               >
+                <option value="">Select…</option>
+                {frequencyOptions.map((option) => (
+                  <option key={option} value={option}>
+                    {option}
+                  </option>
+                ))}
+              </select>
+            </Field>
+
+            <div className="grid grid-cols-3 gap-4 sm:col-span-2">
+              <Field label="Bedrooms" htmlFor={id('bedrooms')}>
                 <input
-                  type="checkbox"
-                  name="addOns"
-                  value={option}
-                  className="size-4 rounded border-forest-900/25 text-forest-700 accent-forest-700"
+                  id={id('bedrooms')}
+                  name="bedrooms"
+                  type="number"
+                  min={0}
+                  max={20}
+                  placeholder="3"
+                  className={cn(fieldBase, 'border-forest-900/15')}
                 />
-                {option}
-              </label>
-            ))}
+              </Field>
+              <Field label="Bathrooms" htmlFor={id('bathrooms')}>
+                <input
+                  id={id('bathrooms')}
+                  name="bathrooms"
+                  type="number"
+                  min={0}
+                  max={20}
+                  step="0.5"
+                  placeholder="2"
+                  className={cn(fieldBase, 'border-forest-900/15')}
+                />
+              </Field>
+              <Field label="Approx. sq ft" htmlFor={id('squareFeet')}>
+                <input
+                  id={id('squareFeet')}
+                  name="squareFeet"
+                  type="text"
+                  inputMode="numeric"
+                  placeholder="1,800"
+                  className={cn(fieldBase, 'border-forest-900/15')}
+                />
+              </Field>
+            </div>
+
+            <Field label="Do you have pets?" htmlFor={id('pets')}>
+              <select
+                id={id('pets')}
+                name="pets"
+                defaultValue=""
+                className={cn(fieldBase, 'border-forest-900/15')}
+              >
+                <option value="">Select…</option>
+                {petOptions.map((option) => (
+                  <option key={option} value={option}>
+                    {option}
+                  </option>
+                ))}
+              </select>
+            </Field>
+
+            <Field
+              label="Last professionally cleaned?"
+              htmlFor={id('lastCleaned')}
+            >
+              <select
+                id={id('lastCleaned')}
+                name="lastCleaned"
+                defaultValue=""
+                className={cn(fieldBase, 'border-forest-900/15')}
+              >
+                <option value="">Select…</option>
+                {lastCleanedOptions.map((option) => (
+                  <option key={option} value={option}>
+                    {option}
+                  </option>
+                ))}
+              </select>
+            </Field>
+
+            <fieldset className="sm:col-span-2">
+              <legend className="mb-2.5 text-sm font-medium text-forest-900/85">
+                Additional services{' '}
+                <span className="font-normal text-forest-900/50">
+                  (optional, may carry an extra fee)
+                </span>
+              </legend>
+              <div className="grid grid-cols-1 gap-x-6 gap-y-2.5 sm:grid-cols-2">
+                {additionalServices.map((option) => (
+                  <label
+                    key={option}
+                    className="flex cursor-pointer items-center gap-2.5 text-sm text-forest-900/80"
+                  >
+                    <input
+                      type="checkbox"
+                      name="addOns"
+                      value={option}
+                      className="size-4 rounded border-forest-900/25 text-forest-700 accent-forest-700"
+                    />
+                    {option}
+                  </label>
+                ))}
+              </div>
+            </fieldset>
+
+            <Field
+              label="Tell us a little about the current condition of your home"
+              htmlFor={id('homeCondition')}
+              className="sm:col-span-2"
+            >
+              <textarea
+                id={id('homeCondition')}
+                name="homeCondition"
+                rows={3}
+                placeholder="This helps us quote accurately — no judgment, we have seen it all."
+                className={cn(fieldBase, 'resize-y border-forest-900/15')}
+              />
+            </Field>
+
+            <Field
+              label="Special requests"
+              htmlFor={id('specialRequests')}
+              className="sm:col-span-2"
+            >
+              <textarea
+                id={id('specialRequests')}
+                name="specialRequests"
+                rows={3}
+                placeholder="Access instructions, areas to skip, fragrance-free products, anything else."
+                className={cn(fieldBase, 'resize-y border-forest-900/15')}
+              />
+            </Field>
           </div>
-        </fieldset>
-
-        <Field
-          label="Tell us a little about the current condition of your home"
-          htmlFor={id('homeCondition')}
-          className="sm:col-span-2"
-        >
-          <textarea
-            id={id('homeCondition')}
-            name="homeCondition"
-            rows={3}
-            placeholder="This helps us quote accurately — no judgment, we have seen it all."
-            className={cn(fieldBase, 'resize-y border-forest-900/15')}
-          />
-        </Field>
-
-        <Field label="Special requests" htmlFor={id('specialRequests')} className="sm:col-span-2">
-          <textarea
-            id={id('specialRequests')}
-            name="specialRequests"
-            rows={3}
-            placeholder="Access instructions, areas to skip, fragrance-free products, anything else."
-            className={cn(fieldBase, 'resize-y border-forest-900/15')}
-          />
-        </Field>
+        </details>
       </div>
 
       {/* Honeypot — hidden from people, irresistible to bots. */}

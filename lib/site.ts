@@ -90,6 +90,14 @@ export const whatsappHref = (() => {
 export const telHref = `tel:${site.phone.e164}`;
 export const smsHref = `sms:${site.phone.e164}`;
 
+/** A short US-English opener the visitor can send as-is. */
+export const smsMessage = "Hi Dolane Cleaning! I'd like a free cleaning quote.";
+/**
+ * SMS link with the message prefilled. The `?&body=` form is the one that works
+ * across both iOS and Android messaging apps.
+ */
+export const smsHrefWithBody = `sms:${site.phone.e164}?&body=${encodeURIComponent(smsMessage)}`;
+
 /** Cities the owners confirmed they serve. Order matters for the UI. */
 export const serviceArea = [
   'Westerville',

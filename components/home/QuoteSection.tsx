@@ -2,6 +2,7 @@ import { Clock, ShieldCheck, Sparkles } from 'lucide-react';
 
 import SectionHeading from '@/components/ui/SectionHeading';
 import Reveal from '@/components/ui/Reveal';
+import SmsButton from '@/components/ui/SmsButton';
 import QuoteForm from '@/components/forms/QuoteForm';
 
 const assurances = [
@@ -33,6 +34,11 @@ export default function QuoteSection() {
 
         <Reveal delay={140} className="mt-10">
           <QuoteForm />
+        </Reveal>
+
+        <Reveal delay={80} className="mt-6 flex flex-wrap items-center justify-center gap-2 text-center text-sm text-forest-900/65">
+          <span>Prefer to text? Message us and we&apos;ll reply fast —</span>
+          <SmsButton variant="link">Text Us for a Free Quote</SmsButton>
         </Reveal>
       </div>
     </section>

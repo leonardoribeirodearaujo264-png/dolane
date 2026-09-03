@@ -31,7 +31,8 @@ export const quoteSchema = z.object({
 
   email: trimmed(160).email('Please enter a valid email address.'),
 
-  city: trimmed(80).min(2, 'Please tell us which city you are in.'),
+  // Optional: ZIP is enough to locate the visitor, so city never blocks a lead.
+  city: trimmed(80).optional().or(z.literal('')),
 
   zip: trimmed(12)
     .min(5, 'Please enter your ZIP code.')
@@ -43,9 +44,11 @@ export const quoteSchema = z.object({
     message: 'Please choose the type of cleaning you need.',
   }),
 
-  frequency: z.enum(frequencyOptions as unknown as [string, ...string[]], {
-    message: 'Please choose how often you would like service.',
-  }),
+  // Optional: a detail we can confirm later, so it never blocks a lead.
+  frequency: z
+    .enum(frequencyOptions as unknown as [string, ...string[]])
+    .optional()
+    .or(z.literal('')),
 
   bedrooms: trimmed(12).optional().or(z.literal('')),
   bathrooms: trimmed(12).optional().or(z.literal('')),

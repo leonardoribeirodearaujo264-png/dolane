@@ -1,8 +1,8 @@
-import { MessageCircle, Phone } from 'lucide-react';
+import { Phone } from 'lucide-react';
 
 import Reveal from '@/components/ui/Reveal';
 import { ButtonLink } from '@/components/ui/Button';
-import OpenChatButton from '@/components/ui/OpenChatButton';
+import SmsButton from '@/components/ui/SmsButton';
 import { LogoMark } from '@/components/ui/Logo';
 import { site, telHref } from '@/lib/site';
 
@@ -38,10 +38,9 @@ export default function CTASection() {
           <ButtonLink href="#quote" size="lg" className="w-full sm:w-auto">
             Get My Free Quote
           </ButtonLink>
-          <OpenChatButton variant="ghost-light" size="lg" className="w-full sm:w-auto">
-            <MessageCircle className="size-4" aria-hidden="true" />
-            Chat with us
-          </OpenChatButton>
+          <SmsButton variant="ghost-light" size="lg" className="w-full sm:w-auto">
+            Text Us
+          </SmsButton>
         </div>
 
         <a

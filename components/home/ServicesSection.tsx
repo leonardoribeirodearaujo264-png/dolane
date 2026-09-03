@@ -2,6 +2,8 @@ import { Info, Plus } from 'lucide-react';
 
 import SectionHeading from '@/components/ui/SectionHeading';
 import Reveal from '@/components/ui/Reveal';
+import { ButtonLink } from '@/components/ui/Button';
+import SmsButton from '@/components/ui/SmsButton';
 import ServiceCard from '@/components/services/ServiceCard';
 import {
   additionalServices,
@@ -50,6 +52,21 @@ export default function ServicesSection() {
                 </li>
               ))}
             </ul>
+          </div>
+        </Reveal>
+
+        {/* Keep the ad visitor moving: quote or text, right after the services. */}
+        <Reveal className="mt-12 flex flex-col items-center gap-5 text-center lg:mt-14">
+          <p className="max-w-md text-base leading-relaxed text-forest-900/70">
+            Not sure which service you need? Tell us about your home and we&apos;ll help you decide.
+          </p>
+          <div className="flex w-full flex-col justify-center gap-3 sm:w-auto sm:flex-row">
+            <ButtonLink href="#quote" size="lg" className="w-full sm:w-auto">
+              Get a Free Quote
+            </ButtonLink>
+            <SmsButton variant="forest" size="lg" className="w-full sm:w-auto">
+              Text Us
+            </SmsButton>
           </div>
         </Reveal>
       </div>

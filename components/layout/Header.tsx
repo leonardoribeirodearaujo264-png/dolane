@@ -10,6 +10,7 @@ import { ButtonLink } from '@/components/ui/Button';
 import MobileMenu from './MobileMenu';
 import { cn } from '@/lib/cn';
 import { primaryNav, site, telHref } from '@/lib/site';
+import { trackContact } from '@/lib/analytics';
 import { hasReviews } from '@/content/reviews';
 
 export default function Header() {
@@ -91,6 +92,7 @@ export default function Header() {
           <div className="flex items-center gap-2 sm:gap-3">
             <a
               href={telHref}
+              onClick={() => trackContact('call')}
               className="hidden items-center gap-2 rounded-full border border-gold-500/25 px-4 py-2.5 text-sm font-semibold text-gold-200 transition hover:border-gold-500/60 hover:bg-gold-500/10 md:inline-flex"
             >
               <Phone className="size-4" aria-hidden="true" />
