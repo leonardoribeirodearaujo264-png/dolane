@@ -209,7 +209,7 @@ Verified with no horizontal overflow and no console errors at 390px, 820px and
 app/                    Routes, layout, API, sitemap, robots, icons, fonts
   api/quote/route.ts    Quote form endpoint
 components/
-  layout/               Header, MobileMenu, Footer, WhatsAppButton, PageHeader
+  layout/               Header, MobileMenu, Footer, ChatWidget, PageHeader
   home/                 One file per homepage section
   services/             ServiceCard
   gallery/              GalleryLightbox

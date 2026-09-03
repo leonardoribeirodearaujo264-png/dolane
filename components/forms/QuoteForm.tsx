@@ -5,7 +5,8 @@ import { AlertCircle, Check, Loader2, MessageCircle, Phone } from 'lucide-react'
 
 import { Button } from '@/components/ui/Button';
 import { cn } from '@/lib/cn';
-import { site, telHref, whatsappHref } from '@/lib/site';
+import { site, telHref } from '@/lib/site';
+import { openChat } from '@/lib/chat';
 import {
   additionalServices,
   frequencyOptions,
@@ -172,15 +173,14 @@ export default function QuoteForm() {
             <Phone className="size-4" aria-hidden="true" />
             {site.phone.display}
           </a>
-          <a
-            href={whatsappHref}
-            target="_blank"
-            rel="noopener noreferrer"
+          <button
+            type="button"
+            onClick={openChat}
             className="inline-flex items-center gap-2 rounded-full border border-forest-900/20 px-6 py-3 text-sm font-semibold text-forest-900 transition hover:border-forest-900/50"
           >
             <MessageCircle className="size-4" aria-hidden="true" />
-            WhatsApp
-          </a>
+            Chat with us
+          </button>
         </div>
 
         <p className="mt-6 text-xs text-forest-900/50">

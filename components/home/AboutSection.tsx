@@ -3,7 +3,7 @@ import { Quote } from 'lucide-react';
 
 import Reveal from '@/components/ui/Reveal';
 import { ButtonLink } from '@/components/ui/Button';
-import { mission, stats, values } from '@/content/trust';
+import { mission, values } from '@/content/trust';
 import { site } from '@/lib/site';
 
 export default function AboutSection() {
@@ -61,22 +61,7 @@ export default function AboutSection() {
               </div>
             </Reveal>
 
-            <Reveal delay={100}>
-              <dl className="mt-10 grid grid-cols-2 gap-x-6 gap-y-7 border-y border-forest-900/10 py-8 sm:grid-cols-4">
-                {stats.map((stat) => (
-                  <div key={stat.label}>
-                    <dt className="font-display text-3xl leading-none text-gold-700 sm:text-4xl">
-                      {stat.value}
-                    </dt>
-                    <dd className="mt-2 text-xs leading-snug text-forest-900/60 sm:text-sm">
-                      {stat.label}
-                    </dd>
-                  </div>
-                ))}
-              </dl>
-            </Reveal>
-
-            <Reveal delay={160} className="mt-9">
+            <Reveal delay={160} className="mt-10">
               <ButtonLink href="#quote" size="lg">
                 Request a Free Quote
               </ButtonLink>

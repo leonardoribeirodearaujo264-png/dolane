@@ -14,6 +14,14 @@ export function FacebookIcon({ className }: IconProps) {
   );
 }
 
+export function GoogleIcon({ className }: IconProps) {
+  return (
+    <svg viewBox="0 0 24 24" fill="currentColor" className={className} aria-hidden="true">
+      <path d="M12.24 10.4v3.32h4.65c-.2 1.2-1.4 3.5-4.65 3.5a5.13 5.13 0 0 1 0-10.26c1.6 0 2.67.68 3.28 1.27l2.24-2.17C16.4 3.9 14.5 3 12.24 3a8.24 8.24 0 1 0 0 16.48c4.76 0 7.9-3.34 7.9-8.05 0-.54-.06-.95-.13-1.36h-7.67z" />
+    </svg>
+  );
+}
+
 export function InstagramIcon({ className }: IconProps) {
   return (
     <svg viewBox="0 0 24 24" fill="currentColor" className={className} aria-hidden="true">

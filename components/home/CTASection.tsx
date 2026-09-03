@@ -2,8 +2,9 @@ import { MessageCircle, Phone } from 'lucide-react';
 
 import Reveal from '@/components/ui/Reveal';
 import { ButtonLink } from '@/components/ui/Button';
+import OpenChatButton from '@/components/ui/OpenChatButton';
 import { LogoMark } from '@/components/ui/Logo';
-import { site, telHref, whatsappHref } from '@/lib/site';
+import { site, telHref } from '@/lib/site';
 
 export default function CTASection() {
   return (
@@ -37,17 +38,10 @@ export default function CTASection() {
           <ButtonLink href="#quote" size="lg" className="w-full sm:w-auto">
             Get My Free Quote
           </ButtonLink>
-          <ButtonLink
-            href={whatsappHref}
-            target="_blank"
-            rel="noopener noreferrer"
-            variant="ghost-light"
-            size="lg"
-            className="w-full sm:w-auto"
-          >
+          <OpenChatButton variant="ghost-light" size="lg" className="w-full sm:w-auto">
             <MessageCircle className="size-4" aria-hidden="true" />
-            Message us on WhatsApp
-          </ButtonLink>
+            Chat with us
+          </OpenChatButton>
         </div>
 
         <a

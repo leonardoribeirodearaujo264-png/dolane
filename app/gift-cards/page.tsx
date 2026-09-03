@@ -4,7 +4,8 @@ import { Check, Gift, Mail, MessageCircle, Phone } from 'lucide-react';
 import PageHeader from '@/components/layout/PageHeader';
 import Reveal from '@/components/ui/Reveal';
 import { ButtonLink } from '@/components/ui/Button';
-import { site, telHref, whatsappHref } from '@/lib/site';
+import OpenChatButton from '@/components/ui/OpenChatButton';
+import { site, telHref } from '@/lib/site';
 
 export const metadata: Metadata = {
   title: 'Gift Cards',
@@ -96,16 +97,10 @@ export default function GiftCardsPage() {
           </p>
 
           <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
-            <ButtonLink
-              href={whatsappHref}
-              target="_blank"
-              rel="noopener noreferrer"
-              size="lg"
-              className="w-full sm:w-auto"
-            >
+            <OpenChatButton size="lg" className="w-full sm:w-auto">
               <MessageCircle className="size-4" aria-hidden="true" />
-              Message us on WhatsApp
-            </ButtonLink>
+              Chat with us
+            </OpenChatButton>
             <ButtonLink href={telHref} variant="ghost-light" size="lg" className="w-full sm:w-auto">
               <Phone className="size-4" aria-hidden="true" />
               {site.phone.display}

@@ -1,18 +1,17 @@
 import { NextResponse } from 'next/server';
 
-import { quoteSchema } from '@/lib/quote-schema';
+import { contactSchema } from '@/lib/contact-schema';
 import { insertLead, sendLeadEmail, nullify, type LeadRecord } from '@/lib/leads';
 
 export const runtime = 'nodejs';
-/** Leads must never be served from a cache. */
+/** Messages must never be served from a cache. */
 export const dynamic = 'force-dynamic';
 
 /**
- * Very small in-memory rate limiter. Good enough to stop a bot hammering the
- * endpoint from one address; it resets on cold start, which is fine because it
- * is a speed bump, not the primary defense (the honeypot and time trap are).
+ * Small in-memory rate limiter — a speed bump, not the primary defense (the
+ * honeypot and time trap are). Resets on cold start, which is fine.
  */
-const RATE_LIMIT = { max: 5, windowMs: 10 * 60 * 1000 };
+const RATE_LIMIT = { max: 6, windowMs: 10 * 60 * 1000 };
 const hits = new Map<string, number[]>();
 
 function isRateLimited(ip: string) {
@@ -32,7 +31,7 @@ export async function POST(request: Request) {
 
   if (isRateLimited(ip)) {
     return NextResponse.json(
-      { ok: false, message: 'Too many requests. Please try again in a few minutes.' },
+      { ok: false, message: 'Too many messages. Please try again in a few minutes.' },
       { status: 429 },
     );
   }
@@ -44,7 +43,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ ok: false, message: 'Invalid request.' }, { status: 400 });
   }
 
-  const parsed = quoteSchema.safeParse(payload);
+  const parsed = contactSchema.safeParse(payload);
   if (!parsed.success) {
     const fieldErrors: Record<string, string> = {};
     for (const issue of parsed.error.issues) {
@@ -59,35 +58,38 @@ export async function POST(request: Request) {
 
   const data = parsed.data;
 
-  // Honeypot: only a bot fills a field that is hidden from humans. Answer 200 so
-  // the bot believes it succeeded and stops retrying.
+  // Honeypot: answer 200 so the bot believes it succeeded and stops retrying.
   if (data.company) return NextResponse.json({ ok: true });
 
-  // Time trap: a real person cannot complete this form in under three seconds.
-  if (data.startedAt && Date.now() - data.startedAt < 3000) {
+  // Time trap: a real person cannot fill this in under two seconds.
+  if (data.startedAt && Date.now() - data.startedAt < 2000) {
     return NextResponse.json({ ok: true });
   }
 
+  // The single "contact" field is a phone number or an email — route it to the
+  // matching column so the lead is still searchable by either.
+  const looksLikeEmail = /\S+@\S+\.\S+/.test(data.contact);
+
   const record: LeadRecord = {
-    type: 'quote',
-    full_name: nullify(data.fullName),
-    phone: nullify(data.phone),
-    email: nullify(data.email),
-    city: nullify(data.city),
-    zip: nullify(data.zip),
-    service_type: nullify(data.serviceType),
-    frequency: nullify(data.frequency),
-    bedrooms: nullify(data.bedrooms),
-    bathrooms: nullify(data.bathrooms),
-    square_feet: nullify(data.squareFeet),
-    preferred_date: nullify(data.preferredDate),
-    pets: nullify(data.pets),
-    last_cleaned: nullify(data.lastCleaned),
-    add_ons: data.addOns && data.addOns.length ? data.addOns : null,
-    home_condition: nullify(data.homeCondition),
-    special_requests: nullify(data.specialRequests),
-    message: null,
-    source: 'website-quote-form',
+    type: 'contact',
+    full_name: nullify(data.name),
+    phone: looksLikeEmail ? null : nullify(data.contact),
+    email: looksLikeEmail ? nullify(data.contact) : null,
+    city: null,
+    zip: null,
+    service_type: null,
+    frequency: null,
+    bedrooms: null,
+    bathrooms: null,
+    square_feet: null,
+    preferred_date: null,
+    pets: null,
+    last_cleaned: null,
+    add_ons: null,
+    home_condition: null,
+    special_requests: null,
+    message: nullify(data.message),
+    source: 'website-chat-widget',
   };
 
   const saved = await insertLead(record);
@@ -96,7 +98,7 @@ export async function POST(request: Request) {
       {
         ok: false,
         message:
-          'We could not submit your request just now. Please call or text us and we will help right away.',
+          'We could not send that just now. Please call or text us and we will help right away.',
       },
       { status: 502 },
     );

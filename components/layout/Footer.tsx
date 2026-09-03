@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { Mail, MapPin, Phone } from 'lucide-react';
 
 import Logo from '@/components/ui/Logo';
-import { FacebookIcon, InstagramIcon } from '@/components/ui/SocialIcons';
+import { FacebookIcon, GoogleIcon, InstagramIcon } from '@/components/ui/SocialIcons';
 import { fullNav, serviceArea, site, telHref } from '@/lib/site';
 import { services } from '@/content/services';
 
@@ -19,6 +19,7 @@ export default function Footer() {
   const socials = [
     { href: site.social.facebook, label: 'Facebook', Icon: FacebookIcon },
     { href: site.social.instagram, label: 'Instagram', Icon: InstagramIcon },
+    { href: site.social.google, label: 'Google', Icon: GoogleIcon },
   ].filter((item): item is { href: string; label: string; Icon: typeof FacebookIcon } =>
     Boolean(item.href),
   );
