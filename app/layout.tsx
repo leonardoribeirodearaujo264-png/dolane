@@ -4,6 +4,7 @@ import localFont from 'next/font/local';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 import ChatWidget from '@/components/layout/ChatWidget';
+import MetaPixel from '@/components/analytics/MetaPixel';
 import StructuredData from '@/components/seo/StructuredData';
 import { site } from '@/lib/site';
 
@@ -102,6 +103,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         >
           Skip to main content
         </a>
+        <MetaPixel />
         <StructuredData />
         <Header />
         <main id="main">{children}</main>
