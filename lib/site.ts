@@ -78,7 +78,7 @@ export const site = {
     google: process.env.NEXT_PUBLIC_GOOGLE_BUSINESS_URL || null,
   },
 
-  url: (process.env.NEXT_PUBLIC_SITE_URL || 'https://www.dolanecleaningservices.com').replace(/\/$/, ''),
+  url: (process.env.NEXT_PUBLIC_SITE_URL || 'https://www.dolanedirham.com').replace(/\/$/, ''),
 } as const;
 
 export const whatsappHref = (() => {
