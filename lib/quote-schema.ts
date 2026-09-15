@@ -29,7 +29,8 @@ export const quoteSchema = z.object({
       message: 'Please enter a valid 10-digit phone number.',
     }),
 
-  email: trimmed(160).email('Please enter a valid email address.'),
+  // Optional: phone is the primary contact channel, so email never blocks a lead.
+  email: trimmed(160).email('Please enter a valid email address.').optional().or(z.literal('')),
 
   // Optional: ZIP is enough to locate the visitor, so city never blocks a lead.
   city: trimmed(80).optional().or(z.literal('')),
