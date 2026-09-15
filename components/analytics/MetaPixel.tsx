@@ -4,7 +4,7 @@ import { useEffect, useRef } from 'react';
 import { usePathname } from 'next/navigation';
 import Script from 'next/script';
 
-import { trackContact } from '@/lib/analytics';
+import { trackCallClick, trackSmsClick } from '@/lib/analytics';
 
 /**
  * Meta (Facebook) Pixel.
@@ -47,7 +47,8 @@ export default function MetaPixel() {
       const link = target?.closest?.('a[href^="sms:"], a[href^="tel:"]');
       if (!link) return;
       const href = link.getAttribute('href') ?? '';
-      trackContact(href.startsWith('sms:') ? 'Text Us' : 'Call');
+      if (href.startsWith('sms:')) trackSmsClick();
+      else trackCallClick();
     };
     // Capture phase so it runs before the browser hands off to the SMS/dialer app.
     document.addEventListener('click', onClick, true);

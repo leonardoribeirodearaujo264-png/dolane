@@ -106,6 +106,30 @@
     letter-spacing: 0.22em;
     text-transform: uppercase;
   }
+
+  /*
+    Discreet attention pulse for the single primary CTA. Drawn on a pseudo
+    element so the button keeps its own shadow, and stopped for anyone who
+    prefers reduced motion (handled by the global reduced-motion block below).
+  */
+  .cta-pulse {
+    position: relative;
+  }
+
+  .cta-pulse::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    box-shadow: 0 0 0 0 rgb(225 194 119 / 0.55);
+    animation: cta-pulse 2.6s ease-in-out infinite;
+  }
+
+  @keyframes cta-pulse {
+    0% { box-shadow: 0 0 0 0 rgb(225 194 119 / 0.5); }
+    70%, 100% { box-shadow: 0 0 0 12px rgb(225 194 119 / 0); }
+  }
 }
 
 /*

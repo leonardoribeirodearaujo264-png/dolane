@@ -5,6 +5,7 @@ import type { ReactNode } from 'react';
 
 import { cn } from '@/lib/cn';
 import { smsHrefWithBody } from '@/lib/site';
+import { isLikelyMobile, openSmsModal } from '@/lib/sms';
 
 type Variant = 'gold' | 'forest' | 'ghost-light' | 'link';
 type Size = 'md' | 'lg';
@@ -28,8 +29,13 @@ const sizes: Record<Size, string> = {
 };
 
 /**
- * "Text Us" call-to-action. Opens the visitor's SMS app to the business number
- * with a short message prefilled, and reports a Meta `Contact` event on tap.
+ * "Text Us" call-to-action.
+ *
+ * On a phone/tablet it opens the native Messages app to the business number with
+ * a message prefilled. On a desktop — where `sms:` typically does nothing — it
+ * opens the copy-number modal instead, so the click always has a visible result.
+ * The `sms_click` / Contact events are fired by the delegated listener in
+ * MetaPixel, so every SMS link is tracked in one place.
  */
 export default function SmsButton({
   children = 'Text Us',
@@ -37,17 +43,33 @@ export default function SmsButton({
   size = 'md',
   className,
   withIcon = true,
+  pulse = false,
 }: {
   children?: ReactNode;
   variant?: Variant;
   size?: Size;
   className?: string;
   withIcon?: boolean;
+  pulse?: boolean;
 }) {
   return (
     <a
       href={smsHrefWithBody}
-      className={cn(base, variants[variant], variant !== 'link' && sizes[size], className)}
+      aria-label={typeof children === 'string' ? children : 'Text us for a free quote'}
+      onClick={(event) => {
+        // On desktop, fall back to the modal instead of a dead sms: link.
+        if (!isLikelyMobile()) {
+          event.preventDefault();
+          openSmsModal();
+        }
+      }}
+      className={cn(
+        base,
+        variants[variant],
+        variant !== 'link' && sizes[size],
+        pulse && 'cta-pulse',
+        className,
+      )}
     >
       {withIcon && <MessageSquareText className="size-4 shrink-0" aria-hidden="true" />}
       {children}

@@ -1,12 +1,12 @@
 'use client';
 
 import { useEffect, useId, useRef, useState } from 'react';
-import { AlertCircle, Check, ChevronDown, Loader2, MessageCircle, Phone } from 'lucide-react';
+import { AlertCircle, Check, ChevronDown, Loader2, Phone } from 'lucide-react';
 
 import { Button } from '@/components/ui/Button';
+import SmsButton from '@/components/ui/SmsButton';
 import { cn } from '@/lib/cn';
 import { site, telHref } from '@/lib/site';
-import { openChat } from '@/lib/chat';
 import { trackLead } from '@/lib/analytics';
 import {
   additionalServices,
@@ -169,25 +169,18 @@ export default function QuoteForm() {
         </p>
 
         <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
+          <SmsButton variant="gold" size="md">Text Us Now for a Faster Response</SmsButton>
           <a
             href={telHref}
-            className="inline-flex items-center gap-2 rounded-full bg-forest-900 px-6 py-3 text-sm font-semibold text-gold-200 transition hover:bg-forest-800"
-          >
-            <Phone className="size-4" aria-hidden="true" />
-            {site.phone.display}
-          </a>
-          <button
-            type="button"
-            onClick={openChat}
             className="inline-flex items-center gap-2 rounded-full border border-forest-900/20 px-6 py-3 text-sm font-semibold text-forest-900 transition hover:border-forest-900/50"
           >
-            <MessageCircle className="size-4" aria-hidden="true" />
-            Chat with us
-          </button>
+            <Phone className="size-4" aria-hidden="true" />
+            Call {site.phone.display}
+          </a>
         </div>
 
         <p className="mt-6 text-xs text-forest-900/50">
-          Need it sooner? Call or text and we will get straight back to you.
+          Need it sooner? Text or call and we will get straight back to you.
         </p>
       </div>
     );
@@ -482,7 +475,7 @@ export default function QuoteForm() {
               Sending…
             </>
           ) : (
-            'Request My Free Quote'
+            'Get My Free Quote'
           )}
         </Button>
 

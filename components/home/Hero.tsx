@@ -1,7 +1,6 @@
 import Image from 'next/image';
 import { Check, Phone } from 'lucide-react';
 
-import { ButtonLink } from '@/components/ui/Button';
 import SmsButton from '@/components/ui/SmsButton';
 import { LogoMark } from '@/components/ui/Logo';
 import { site, telHref } from '@/lib/site';
@@ -40,32 +39,37 @@ export default function Hero() {
           </p>
 
           <h1 className="mt-6 text-[2.75rem] leading-[1.05] text-cream sm:text-6xl lg:text-[4.25rem]">
-            A clean home.
-            <span className="block text-gold-400">More time for what matters.</span>
+            A Cleaner Home,
+            <span className="block text-gold-400">Without the Stress</span>
           </h1>
 
           <p className="mt-7 max-w-xl text-lg leading-relaxed text-forest-100/85">
-            Dolane Cleaning Services is a family-owned, fully insured cleaning company
-            serving Westerville, Columbus and surrounding communities. We care for your
-            home like it&apos;s our own.
+            Reliable home cleaning tailored to your needs and schedule. Text us today for a
+            fast, free quote.
           </p>
 
           <div className="mt-9 flex flex-col gap-3 sm:flex-row sm:items-center">
-            <ButtonLink href="#quote" size="lg" className="w-full sm:w-auto">
-              Get a Free Quote
-            </ButtonLink>
-            <SmsButton variant="ghost-light" size="lg" className="w-full sm:w-auto">
+            <SmsButton variant="gold" size="lg" pulse className="w-full sm:w-auto">
               Text Us for a Free Quote
             </SmsButton>
+            <a
+              href={telHref}
+              className="inline-flex w-full items-center justify-center gap-2 rounded-full border border-gold-300/45 px-8 py-4 text-[0.95rem] font-semibold text-gold-100 backdrop-blur-sm transition-all duration-300 hover:border-gold-300 hover:bg-gold-300/12 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold-300 sm:w-auto"
+            >
+              <Phone className="size-4 shrink-0" aria-hidden="true" />
+              Call Now
+            </a>
           </div>
 
+          <p className="mt-4 text-sm text-forest-100/70">
+            Quick response &middot; Free quote &middot; No obligation
+          </p>
+
           <a
-            href={telHref}
-            className="mt-6 inline-flex items-center gap-2.5 text-sm text-forest-100/70 transition hover:text-gold-300"
+            href="#quote"
+            className="mt-4 inline-flex items-center gap-1.5 text-sm text-forest-100/70 underline-offset-4 transition hover:text-gold-300 hover:underline"
           >
-            <Phone className="size-4 text-gold-500" aria-hidden="true" />
-            Prefer to talk? Call or text{' '}
-            <span className="font-semibold text-gold-300">{site.phone.display}</span>
+            Prefer a form? Get a free quote online
           </a>
 
           <ul className="mt-10 grid grid-cols-1 gap-x-6 gap-y-3 border-t border-gold-500/15 pt-8 sm:grid-cols-2">

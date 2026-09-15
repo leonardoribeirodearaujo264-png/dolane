@@ -90,8 +90,8 @@ export const whatsappHref = (() => {
 export const telHref = `tel:${site.phone.e164}`;
 export const smsHref = `sms:${site.phone.e164}`;
 
-/** A short US-English opener the visitor can send as-is. */
-export const smsMessage = "Hi Dolane Cleaning! I'd like a free cleaning quote.";
+/** A short US-English opener the visitor can send as-is (blank left for the ZIP). */
+export const smsMessage = "Hi! I'd like a free cleaning quote. My ZIP Code is ____.";
 /**
  * SMS link with the message prefilled. The `?&body=` form is the one that works
  * across both iOS and Android messaging apps.
