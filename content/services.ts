@@ -82,7 +82,10 @@ export const services: Service[] = [
       'Consistent, dependable service',
       'A welcoming space for your customers',
     ],
-    image: null,
+    image: {
+      src: '/images/services/commercial-cleaning.webp',
+      alt: 'A cleaning cart in a clean, well-kept commercial corridor',
+    },
     quoteValue: 'Commercial Cleaning',
   },
   {
@@ -96,7 +99,10 @@ export const services: Service[] = [
       'Desks, common areas and restrooms',
       'Discreet, professional service',
     ],
-    image: null,
+    image: {
+      src: '/images/services/office-cleaning.webp',
+      alt: 'A clean, organized modern office meeting room',
+    },
     quoteValue: 'Office Cleaning',
   },
   {
@@ -110,7 +116,10 @@ export const services: Service[] = [
       'Surfaces cleaned and prepared for use',
       'Quoted after reviewing the property',
     ],
-    image: null,
+    image: {
+      src: '/images/services/post-construction-cleaning.webp',
+      alt: 'An interior room being prepared during renovation and construction cleanup',
+    },
     quoteValue: 'Post-Construction or Renovation Cleaning',
   },
 ];
