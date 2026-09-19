@@ -127,8 +127,8 @@ export default function ChatWidget() {
         return;
       }
       setStatus('sent');
-      // Meta conversion: a real lead was captured. Fires once, only here.
-      trackLead({ content_name: 'Chat Message', content_category: 'Contact' });
+      // Meta conversion: Lead fires once, only on a confirmed submission.
+      trackLead('chat');
       form.reset();
     } catch {
       setServerMessage('We could not send that just now. Please call or text us instead.');

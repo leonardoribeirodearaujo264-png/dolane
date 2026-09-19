@@ -34,7 +34,7 @@ const sizes: Record<Size, string> = {
  * On a phone/tablet it opens the native Messages app to the business number with
  * a message prefilled. On a desktop — where `sms:` typically does nothing — it
  * opens the copy-number modal instead, so the click always has a visible result.
- * The `sms_click` / Contact events are fired by the delegated listener in
+ * The Meta `Lead` (lead_type: 'sms') event is fired by the delegated listener in
  * MetaPixel, so every SMS link is tracked in one place.
  */
 export default function SmsButton({

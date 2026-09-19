@@ -4,7 +4,7 @@ import { useEffect, useRef } from 'react';
 import { usePathname } from 'next/navigation';
 import Script from 'next/script';
 
-import { trackCallClick, trackSmsClick } from '@/lib/analytics';
+import { trackLead } from '@/lib/analytics';
 
 /**
  * Meta (Facebook) Pixel.
@@ -37,20 +37,21 @@ export default function MetaPixel() {
     window.fbq?.('track', 'PageView');
   }, [pathname]);
 
-  // One delegated listener fires a Contact event for ANY Text (sms:) or Call
-  // (tel:) link on the site — footer, header, chat, CTAs — exactly once per
-  // click, so there are never duplicate Contact events.
+  // One delegated listener fires Lead { lead_type: 'sms' } for a click on ANY
+  // Text (sms:) link on the site — hero, services, footer, chat, contact card.
+  // Tel/Call links do NOT fire Lead (the campaign counts SMS + form only).
+  // Clicks inside the desktop fallback modal are ignored, because the click
+  // that opened it already fired the Lead — so there are no duplicates.
   useEffect(() => {
     if (!PIXEL_ID) return;
     const onClick = (event: MouseEvent) => {
       const target = event.target as HTMLElement | null;
-      const link = target?.closest?.('a[href^="sms:"], a[href^="tel:"]');
+      const link = target?.closest?.('a[href^="sms:"]');
       if (!link) return;
-      const href = link.getAttribute('href') ?? '';
-      if (href.startsWith('sms:')) trackSmsClick();
-      else trackCallClick();
+      if (link.closest('[data-sms-modal]')) return;
+      trackLead('sms');
     };
-    // Capture phase so it runs before the browser hands off to the SMS/dialer app.
+    // Capture phase so it runs before the browser hands off to the SMS app.
     document.addEventListener('click', onClick, true);
     return () => document.removeEventListener('click', onClick, true);
   }, []);

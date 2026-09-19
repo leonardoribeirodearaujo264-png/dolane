@@ -5,7 +5,6 @@ import { Check, Copy, MessageSquareText, Phone, X } from 'lucide-react';
 
 import { SMS_MODAL_EVENT } from '@/lib/sms';
 import { site, smsHrefWithBody, telHref } from '@/lib/site';
-import { trackPhoneCopy } from '@/lib/analytics';
 
 /**
  * Desktop fallback for the Text (SMS) buttons. On a computer an `sms:` link
@@ -87,7 +86,6 @@ export default function SmsModal() {
     }
     if (ok) {
       setCopied(true);
-      trackPhoneCopy();
       window.setTimeout(() => setCopied(false), 2500);
     }
     // If both paths fail (very rare), the number stays visible on screen to copy.
@@ -108,6 +106,7 @@ export default function SmsModal() {
         role="dialog"
         aria-modal="true"
         aria-labelledby="sms-modal-title"
+        data-sms-modal
         className="relative w-full max-w-sm overflow-hidden rounded-2xl border border-forest-900/10 bg-cream shadow-lift"
       >
         <div className="bg-forest-900 px-6 py-5">

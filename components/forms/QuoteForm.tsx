@@ -140,8 +140,8 @@ export default function QuoteForm() {
       }
 
       setStatus('sent');
-      // Meta conversion: a real lead was captured. Fires once, only here.
-      trackLead({ content_name: serviceType, content_category: 'Quote Request' });
+      // Meta conversion: Lead fires once, only on a confirmed submission.
+      trackLead('form');
     } catch {
       setServerMessage(
         'We could not send your request just now. Please call or text us instead.',
