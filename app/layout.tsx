@@ -6,6 +6,7 @@ import Footer from '@/components/layout/Footer';
 import ChatWidget from '@/components/layout/ChatWidget';
 import SmsModal from '@/components/layout/SmsModal';
 import MetaPixel from '@/components/analytics/MetaPixel';
+import GoogleTag from '@/components/analytics/GoogleTag';
 import StructuredData from '@/components/seo/StructuredData';
 import { site } from '@/lib/site';
 
@@ -105,6 +106,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           Skip to main content
         </a>
         <MetaPixel />
+        <GoogleTag />
         <StructuredData />
         <Header />
         <main id="main">{children}</main>
