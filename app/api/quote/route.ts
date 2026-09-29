@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 
 import { quoteSchema } from '@/lib/quote-schema';
 import { insertLead, sendLeadEmail, nullify, type LeadRecord } from '@/lib/leads';
+import { offer } from '@/lib/offer';
 
 export const runtime = 'nodejs';
 /** Leads must never be served from a cache. */
@@ -68,6 +69,16 @@ export async function POST(request: Request) {
     return NextResponse.json({ ok: true });
   }
 
+  // Never trust the coupon from the client — accept it only if it matches exactly.
+  const submittedCoupon = (data.couponCode ?? '').trim().toUpperCase();
+  const couponValid = submittedCoupon === offer.couponCode;
+  if (submittedCoupon && !couponValid) {
+    console.log('[quote] Ignoring unrecognized coupon code:', submittedCoupon);
+  }
+
+  // Consent is required by the schema, so it is true here. Stamp it server-side.
+  const consented = data.smsEmailConsent === true;
+
   const record: LeadRecord = {
     type: 'quote',
     full_name: nullify(data.fullName),
@@ -88,6 +99,9 @@ export async function POST(request: Request) {
     special_requests: nullify(data.specialRequests),
     message: null,
     source: 'website-quote-form',
+    coupon_code: couponValid ? offer.couponCode : null,
+    sms_email_consent: consented,
+    consent_at: consented ? new Date().toISOString() : null,
   };
 
   const saved = await insertLead(record);

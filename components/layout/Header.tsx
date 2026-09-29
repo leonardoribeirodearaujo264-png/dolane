@@ -3,17 +3,20 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Menu, Phone, ShieldCheck } from 'lucide-react';
+import { BadgePercent, Menu, Phone } from 'lucide-react';
 
 import Logo from '@/components/ui/Logo';
 import { ButtonLink } from '@/components/ui/Button';
 import MobileMenu from './MobileMenu';
 import { cn } from '@/lib/cn';
 import { primaryNav, site, telHref } from '@/lib/site';
+import { offer } from '@/lib/offer';
+import { useCoupon } from '@/components/offer/CouponProvider';
 import { hasReviews } from '@/content/reviews';
 
 export default function Header() {
   const pathname = usePathname();
+  const { applied } = useCoupon();
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
 
@@ -54,11 +57,24 @@ export default function Header() {
           )}
         >
           <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-2.5 sm:px-6 lg:px-8">
-            <p className="flex items-center gap-2 text-xs text-gold-200/80">
-              <ShieldCheck className="size-3.5 shrink-0" aria-hidden="true" />
-              <span>
-                Family-owned &amp; fully insured &middot; Serving {site.location.region}
-              </span>
+            <p className="flex items-center gap-2 text-xs text-gold-200/85">
+              <BadgePercent className="size-3.5 shrink-0" aria-hidden="true" />
+              {applied ? (
+                <span>
+                  <span className="font-semibold text-gold-200">
+                    {offer.discountPercent}% off
+                  </span>{' '}
+                  applied to your first cleaning
+                </span>
+              ) : (
+                <span>
+                  <span className="font-semibold text-gold-200">{offer.headline}</span> for new
+                  clients &middot;{' '}
+                  <Link href="/#offer" className="underline underline-offset-2 hover:text-gold-100">
+                    Claim
+                  </Link>
+                </span>
+              )}
             </p>
             <p className="hidden text-xs text-gold-200/70 sm:block">
               English &middot; Português &middot; Español

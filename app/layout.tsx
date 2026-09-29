@@ -3,6 +3,7 @@ import localFont from 'next/font/local';
 
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
+import CouponProvider from '@/components/offer/CouponProvider';
 import ChatWidget from '@/components/layout/ChatWidget';
 import SmsModal from '@/components/layout/SmsModal';
 import MetaPixel from '@/components/analytics/MetaPixel';
@@ -108,9 +109,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <MetaPixel />
         <GoogleTag />
         <StructuredData />
-        <Header />
-        <main id="main">{children}</main>
-        <Footer />
+        <CouponProvider>
+          <Header />
+          <main id="main">{children}</main>
+          <Footer />
+        </CouponProvider>
         <ChatWidget />
         <SmsModal />
       </body>

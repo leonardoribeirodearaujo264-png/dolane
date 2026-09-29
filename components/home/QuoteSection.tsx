@@ -4,6 +4,7 @@ import SectionHeading from '@/components/ui/SectionHeading';
 import Reveal from '@/components/ui/Reveal';
 import SmsButton from '@/components/ui/SmsButton';
 import QuoteForm from '@/components/forms/QuoteForm';
+import { offer, scarcityHeadline } from '@/lib/offer';
 
 const assurances = [
   { icon: Clock, text: 'Most quotes answered within one business day' },
@@ -32,7 +33,12 @@ export default function QuoteSection() {
           </ul>
         </Reveal>
 
-        <Reveal delay={140} className="mt-10">
+        <Reveal delay={110} className="mt-5 text-center text-sm text-forest-900/70">
+          <span className="font-semibold text-gold-700">{offer.headline}</span> &middot;{' '}
+          {scarcityHeadline()}
+        </Reveal>
+
+        <Reveal delay={140} className="mt-6">
           <QuoteForm />
         </Reveal>
 

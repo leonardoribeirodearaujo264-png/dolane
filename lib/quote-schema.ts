@@ -29,8 +29,8 @@ export const quoteSchema = z.object({
       message: 'Please enter a valid 10-digit phone number.',
     }),
 
-  // Optional: phone is the primary contact channel, so email never blocks a lead.
-  email: trimmed(160).email('Please enter a valid email address.').optional().or(z.literal('')),
+  // Required: the quote and follow-up are sent by email as well as text.
+  email: trimmed(160).min(1, 'Please enter your email.').email('Please enter a valid email address.'),
 
   // Optional: ZIP is enough to locate the visitor, so city never blocks a lead.
   city: trimmed(80).optional().or(z.literal('')),
@@ -70,6 +70,17 @@ export const quoteSchema = z.object({
 
   homeCondition: trimmed(1500).optional().or(z.literal('')),
   specialRequests: trimmed(1500).optional().or(z.literal('')),
+
+  /**
+   * The discount code, if the visitor claimed it. The server never trusts this:
+   * it accepts the value only when it matches the configured code exactly.
+   */
+  couponCode: trimmed(40).optional().or(z.literal('')),
+
+  /** TCPA consent to be contacted by email and text — required to submit. */
+  smsEmailConsent: z.boolean().refine((value) => value === true, {
+    message: 'Please agree to be contacted so we can send your quote.',
+  }),
 
   /**
    * Anti-spam. `company` is a hidden honeypot a human never sees, and

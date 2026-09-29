@@ -6,6 +6,8 @@
  * rules are formally established — they will flow into the page and the FAQPage
  * structured data automatically.
  */
+import { offer } from '@/lib/offer';
+
 export type FaqItem = { question: string; answer: string };
 
 export const faq: FaqItem[] = [
@@ -13,6 +15,13 @@ export const faq: FaqItem[] = [
     question: 'How does the quote process work?',
     answer:
       'Every home is different. Our quotes are personalized based on the size of the property, current condition, type of cleaning, frequency and any additional services requested. Estimates are free with no obligation.',
+  },
+  {
+    question: 'How does the 20% off work?',
+    answer:
+      `New clients get ${offer.discountPercent}% off their first cleaning with code ${offer.couponCode}, for any of our services. ` +
+      'Claim it on this site (or use the link from our ad) and we apply it to your personalized quote. ' +
+      `It has no expiration date. ${offer.terms}`,
   },
   {
     question: 'Do you bring your own cleaning products and equipment?',

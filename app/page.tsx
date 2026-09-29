@@ -1,4 +1,5 @@
 import Hero from '@/components/home/Hero';
+import OfferBlock from '@/components/offer/OfferBlock';
 import StatsBand from '@/components/home/StatsBand';
 import TrustBar from '@/components/home/TrustBar';
 import AboutSection from '@/components/home/AboutSection';
@@ -19,6 +20,7 @@ export default function HomePage() {
   return (
     <>
       <Hero />
+      <OfferBlock />
       <StatsBand />
       <TrustBar />
       <AboutSection />

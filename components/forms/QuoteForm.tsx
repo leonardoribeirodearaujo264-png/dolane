@@ -1,13 +1,14 @@
 'use client';
 
 import { useEffect, useId, useRef, useState } from 'react';
-import { AlertCircle, Check, Loader2, Phone } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import Link from 'next/link';
+import { AlertCircle, BadgePercent, Loader2, X } from 'lucide-react';
 
 import { Button } from '@/components/ui/Button';
-import SmsButton from '@/components/ui/SmsButton';
 import { cn } from '@/lib/cn';
-import { site, telHref } from '@/lib/site';
-import { trackLead } from '@/lib/analytics';
+import { offer } from '@/lib/offer';
+import { useCoupon } from '@/components/offer/CouponProvider';
 import { quoteServiceOptions } from '@/content/services';
 import { quoteSchema } from '@/lib/quote-schema';
 
@@ -56,11 +57,14 @@ export default function QuoteForm() {
   const uid = useId();
   const id = (name: string) => `${uid}-${name}`;
 
+  const router = useRouter();
+  const { applied, remove } = useCoupon();
+
   const formRef = useRef<HTMLFormElement>(null);
   const startedAt = useRef<number>(0);
 
   const [errors, setErrors] = useState<Errors>({});
-  const [status, setStatus] = useState<'idle' | 'sending' | 'sent' | 'error'>('idle');
+  const [status, setStatus] = useState<'idle' | 'sending' | 'error'>('idle');
   const [serverMessage, setServerMessage] = useState<string | null>(null);
   const [serviceType, setServiceType] = useState<string>(quoteServiceOptions[0]);
 
@@ -87,19 +91,22 @@ export default function QuoteForm() {
       fullName: String(formData.get('fullName') ?? ''),
       phone: String(formData.get('phone') ?? ''),
       email: String(formData.get('email') ?? ''),
-      city: String(formData.get('city') ?? ''),
+      city: '',
       zip: String(formData.get('zip') ?? ''),
       serviceType: String(formData.get('serviceType') ?? ''),
-      frequency: String(formData.get('frequency') ?? ''),
+      frequency: '',
       bedrooms: String(formData.get('bedrooms') ?? ''),
       bathrooms: String(formData.get('bathrooms') ?? ''),
-      squareFeet: String(formData.get('squareFeet') ?? ''),
+      squareFeet: '',
       preferredDate: String(formData.get('preferredDate') ?? ''),
-      pets: String(formData.get('pets') ?? ''),
-      lastCleaned: String(formData.get('lastCleaned') ?? ''),
-      addOns: formData.getAll('addOns').map(String),
-      homeCondition: String(formData.get('homeCondition') ?? ''),
+      pets: '',
+      lastCleaned: '',
+      addOns: [] as string[],
+      homeCondition: '',
       specialRequests: String(formData.get('specialRequests') ?? ''),
+      couponCode: applied ? offer.couponCode : '',
+      // Submitting the form is the consent; the disclosure sits under the button.
+      smsEmailConsent: true,
       company: String(formData.get('company') ?? ''),
       startedAt: startedAt.current,
     };
@@ -139,47 +146,20 @@ export default function QuoteForm() {
         return;
       }
 
-      setStatus('sent');
-      // Meta conversion: Lead fires once, only on a confirmed submission.
-      trackLead('form');
+      // Success: hand off to the thank-you page, which fires the conversion.
+      const firstName = payload.fullName.trim().split(/\s+/)[0] ?? '';
+      const params = new URLSearchParams({
+        coupon: applied ? '1' : '0',
+        t: String(Date.now()),
+      });
+      if (firstName) params.set('name', firstName);
+      router.push(`/thank-you?${params.toString()}`);
     } catch {
       setServerMessage(
         'We could not send your request just now. Please call or text us instead.',
       );
       setStatus('error');
     }
-  }
-
-  if (status === 'sent') {
-    return (
-      <div className="rounded-2xl border border-forest-900/10 bg-white p-8 text-center shadow-lift sm:p-12">
-        <span className="mx-auto flex size-16 items-center justify-center rounded-full bg-forest-900">
-          <Check className="size-7 text-gold-400" aria-hidden="true" />
-        </span>
-
-        <h3 className="mt-6 text-3xl text-forest-900">Thank you — we have your request</h3>
-
-        <p className="mx-auto mt-4 max-w-md text-base leading-relaxed text-forest-900/70">
-          Letici or George will review the details and get back to you personally with a
-          personalized quote. We usually respond within one business day.
-        </p>
-
-        <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
-          <SmsButton variant="gold" size="md">Text Us Now for a Faster Response</SmsButton>
-          <a
-            href={telHref}
-            className="inline-flex items-center gap-2 rounded-full border border-forest-900/20 px-6 py-3 text-sm font-semibold text-forest-900 transition hover:border-forest-900/50"
-          >
-            <Phone className="size-4" aria-hidden="true" />
-            Call {site.phone.display}
-          </a>
-        </div>
-
-        <p className="mt-6 text-xs text-forest-900/50">
-          Need it sooner? Text or call and we will get straight back to you.
-        </p>
-      </div>
-    );
   }
 
   return (
@@ -189,8 +169,28 @@ export default function QuoteForm() {
       noValidate
       className="rounded-2xl border border-forest-900/10 bg-white p-6 shadow-lift sm:p-9"
     >
+      {applied && (
+        <div className="mb-6 flex items-start justify-between gap-3 rounded-xl border border-gold-500/40 bg-gold-100/50 px-4 py-3">
+          <div className="flex items-start gap-2.5">
+            <BadgePercent className="mt-0.5 size-4 shrink-0 text-gold-700" aria-hidden="true" />
+            <div>
+              <p className="text-sm font-semibold text-forest-900">{offer.chipText}</p>
+              <p className="mt-0.5 text-xs leading-relaxed text-forest-900/55">{offer.terms}</p>
+            </div>
+          </div>
+          <button
+            type="button"
+            onClick={remove}
+            aria-label="Remove coupon"
+            className="shrink-0 rounded-full p-1 text-forest-900/45 transition hover:bg-forest-900/5 hover:text-forest-900"
+          >
+            <X className="size-4" aria-hidden="true" />
+          </button>
+        </div>
+      )}
+
       <div className="grid gap-5 sm:grid-cols-2">
-        {/* A short form — name, phone and ZIP are all we need to start. */}
+        {/* Name, email, phone and ZIP are all we need to start. */}
         <Field label="Full name" htmlFor={id('fullName')} error={errors.fullName} required>
           <input
             id={id('fullName')}
@@ -213,6 +213,24 @@ export default function QuoteForm() {
             placeholder="(614) 555-0123"
             aria-invalid={Boolean(errors.phone)}
             className={cn(fieldBase, errors.phone ? 'border-red-400' : 'border-forest-900/15')}
+          />
+        </Field>
+
+        <Field
+          label="Email"
+          htmlFor={id('email')}
+          error={errors.email}
+          required
+          className="sm:col-span-2"
+        >
+          <input
+            id={id('email')}
+            name="email"
+            type="email"
+            autoComplete="email"
+            placeholder="you@example.com"
+            aria-invalid={Boolean(errors.email)}
+            className={cn(fieldBase, errors.email ? 'border-red-400' : 'border-forest-900/15')}
           />
         </Field>
 
@@ -299,6 +317,21 @@ export default function QuoteForm() {
           />
         </Field>
       </div>
+
+      {/* Consent disclosure — submitting the form is the agreement (no checkbox). */}
+      <p className="mt-5 text-[0.7rem] leading-relaxed text-forest-900/55">
+        By submitting, you agree to receive your quote and related messages from Dolane Cleaning
+        Services by email and text message at the details above. Message and data rates may apply.
+        Reply STOP to opt out. See our{' '}
+        <Link href="/privacy-policy" className="underline underline-offset-2 hover:text-forest-900">
+          Privacy Policy
+        </Link>{' '}
+        and{' '}
+        <Link href="/terms" className="underline underline-offset-2 hover:text-forest-900">
+          Terms
+        </Link>
+        .
+      </p>
 
       {/* Honeypot — hidden from people, irresistible to bots. */}
       <div aria-hidden="true" className="absolute left-[-9999px] top-0 h-0 w-0 overflow-hidden">

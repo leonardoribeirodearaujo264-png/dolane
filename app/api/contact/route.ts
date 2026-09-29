@@ -90,6 +90,9 @@ export async function POST(request: Request) {
     special_requests: null,
     message: nullify(data.message),
     source: 'website-chat-widget',
+    coupon_code: null,
+    sms_email_consent: null,
+    consent_at: null,
   };
 
   const saved = await insertLead(record);

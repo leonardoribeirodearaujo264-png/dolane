@@ -2,6 +2,7 @@ import 'server-only';
 
 import { supabase } from '@/lib/supabase';
 import { site } from '@/lib/site';
+import { offer } from '@/lib/offer';
 
 /**
  * One row in the public.leads table. Snake_case to match Postgres columns.
@@ -28,6 +29,12 @@ export type LeadRecord = {
   special_requests: string | null;
   message: string | null;
   source: string;
+  /** Discount code applied to this lead (server-validated), or null. */
+  coupon_code: string | null;
+  /** TCPA consent to be contacted by email + text. */
+  sms_email_consent: boolean | null;
+  /** When consent was given (server timestamp), or null. */
+  consent_at: string | null;
 };
 
 /** Trim, and treat an empty string as "not provided" so the DB stores null. */
@@ -48,7 +55,25 @@ export async function insertLead(
     return { ok: false, error: 'Supabase is not configured.' };
   }
 
-  const { error } = await supabase.from('leads').insert(record);
+  let { error } = await supabase.from('leads').insert(record);
+
+  // The offer columns (coupon_code, sms_email_consent, consent_at) may not exist
+  // yet if the migration has not been run. Rather than lose the lead, retry with
+  // only the core columns — the coupon and consent are still in the email.
+  if (error && /coupon_code|sms_email_consent|consent_at|column|schema cache/i.test(
+    `${error.message} ${error.details ?? ''}`,
+  )) {
+    console.warn(
+      '[leads] Insert failed on offer columns — retrying without them. ' +
+        'Run supabase/leads-offer.sql to add coupon_code, sms_email_consent, consent_at. Cause:',
+      error.message,
+    );
+    const { coupon_code, sms_email_consent, consent_at, ...core } = record;
+    void coupon_code;
+    void sms_email_consent;
+    void consent_at;
+    ({ error } = await supabase.from('leads').insert(core));
+  }
 
   if (error) {
     console.error('[leads] Supabase insert failed:', error.message, error.details ?? '');
@@ -120,6 +145,20 @@ export async function sendLeadEmail(record: LeadRecord): Promise<boolean> {
   const who = record.full_name ? ` from ${record.full_name}` : '';
   const subject = `New ${kind}${who} — Dolane Cleaning website`;
 
+  // Highlighted up top: coupon, email and consent — the details that matter most.
+  const couponText = record.coupon_code
+    ? `${record.coupon_code} — ${offer.discountPercent}% off first cleaning`
+    : 'No coupon applied';
+  const consentText = record.sms_email_consent
+    ? `Yes${record.consent_at ? ` — ${record.consent_at}` : ''}`
+    : 'Not given';
+  const highlight = `
+    <div style="margin:6px 0 18px;padding:14px 16px;border-radius:12px;background:#faf3e2;border:1px solid #e6ca85">
+      <p style="margin:0 0 6px;font-size:13px;color:#6f592b"><strong>Coupon:</strong> ${escapeHtml(couponText)}</p>
+      <p style="margin:0 0 6px;font-size:13px;color:#6f592b"><strong>Email:</strong> ${escapeHtml(record.email || '—')}</p>
+      <p style="margin:0;font-size:13px;color:#6f592b"><strong>Consent (email + text):</strong> ${escapeHtml(consentText)}</p>
+    </div>`;
+
   const html = `
     <div style="margin:0;padding:24px 12px;background:#f3efe7">
       <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:600px;margin:0 auto;border-collapse:collapse">
@@ -130,7 +169,8 @@ export async function sendLeadEmail(record: LeadRecord): Promise<boolean> {
           </td>
         </tr>
         <tr>
-          <td style="background:#ffffff;padding:8px 28px 24px">
+          <td style="background:#ffffff;padding:16px 28px 24px">
+            ${highlight}
             <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;font-family:Arial,sans-serif;font-size:14px">
               ${rows
                 .map(
@@ -155,7 +195,9 @@ export async function sendLeadEmail(record: LeadRecord): Promise<boolean> {
     </div>`;
 
   const text =
-    `New ${kind}${who}\n\n` + rows.map(([label, value]) => `${label}: ${value}`).join('\n');
+    `New ${kind}${who}\n\n` +
+    `Coupon: ${couponText}\nConsent (email + text): ${consentText}\n\n` +
+    rows.map(([label, value]) => `${label}: ${value}`).join('\n');
 
   try {
     // Imported lazily so the SDK is only loaded when a lead is actually sent.
